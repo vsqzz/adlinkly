@@ -12,6 +12,9 @@ export default function PremiumPage() {
       <Nav />
       <main className="shell py-10">
         <h1 className="text-4xl font-black">Freemium and premium plans</h1>
+        <p className="mt-4 max-w-3xl leading-7 text-slate-600 dark:text-slate-300">
+          Adlinkly is payment-provider-neutral while the company is being set up. You can collect interest, approve creators, and run manual payout requests now, then connect PayPal, Wise, Tipalti, Stripe, or another provider once verification is possible.
+        </p>
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           {plans.map(([name, price, body]) => (
             <div className="glass rounded-lg p-6" key={name}>

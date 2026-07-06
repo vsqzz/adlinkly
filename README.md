@@ -45,12 +45,13 @@ Build these next, in this order:
 
 1. Auth with creator/admin roles.
 2. Real database reads/writes through Prisma.
-3. Stripe subscriptions for Creator Pro and Visitor Premium.
-4. Stripe Connect, PayPal, Wise, or Tipalti payouts.
-5. Turnstile verification and IP/device risk scoring.
-6. Admin moderation for links, abuse reports, and payout holds.
-7. Automated premium subscription revenue allocation.
-8. Advertiser campaign marketplace.
+3. Manual payout requests and admin review.
+4. Manual payout requests first, then PayPal, Wise, Tipalti, Stripe, or another provider when the business is verified.
+5. PayPal, Wise, Tipalti, Stripe, or another provider when your business can pass verification.
+6. Turnstile verification and IP/device risk scoring.
+7. Admin moderation for links, abuse reports, and payout holds.
+8. Automated premium subscription revenue allocation.
+9. Advertiser campaign marketplace.
 
 ## Premium boost model
 
