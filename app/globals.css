@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --bg: #f8fafc;
+  --panel: #ffffff;
+  --line: #dce4ee;
+  --text: #08111f;
+  --muted: #64748b;
+}
+
+.dark {
+  color-scheme: dark;
+  --bg: #05070d;
+  --panel: #0c111d;
+  --line: #1f2937;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+::selection {
+  background: #38bdf8;
+  color: #00111f;
+}
+
+.shell {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.glass {
+  border: 1px solid color-mix(in srgb, var(--line), transparent 15%);
+  background: color-mix(in srgb, var(--panel), transparent 3%);
+  box-shadow: 0 20px 70px rgba(2, 8, 23, 0.08);
+}
+
+.dark .glass {
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.28);
+}
+
+.focus-ring {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.focus-ring:focus-visible {
+  outline-color: #0ea5e9;
+}
