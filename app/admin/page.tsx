@@ -1,4 +1,5 @@
 import { Nav } from "@/components/nav";
+import { sponsorCampaigns } from "@/lib/ads";
 
 export default function AdminPage() {
   return (
@@ -14,7 +15,36 @@ export default function AdminPage() {
             </div>
           ))}
         </div>
-      </main>
+        <section className="glass mt-8 rounded-lg p-6">
+          <h2 className="text-2xl font-black">PayPal payout automation</h2>
+          <p className="mt-3 max-w-3xl leading-7 text-slate-600 dark:text-slate-300">
+            Approved payouts can be sent through the PayPal Payouts API at <span className="font-mono">/api/admin/paypal-payouts</span>. Keep admin approval enabled until traffic quality, sponsor revenue, and PayPal account limits are stable.
+          </p>
+          <pre className="mt-5 overflow-x-auto rounded-lg bg-slate-950 p-4 text-xs text-slate-100">{`POST /api/admin/paypal-payouts
+{
+  "adminSecret": "...",
+  "payouts": [
+    {
+      "payoutId": "payout_123",
+      "email": "creator@example.com",
+      "amount": "25.00",
+      "currency": "EUR"
+    }
+  ]
+}`}</pre>
+        </section>
+
+        <section className="glass mt-8 rounded-lg p-6">
+          <h2 className="text-2xl font-black">Sponsor campaigns</h2>
+          <div className="mt-4 grid gap-3">
+            {sponsorCampaigns.map((campaign) => (
+              <div className="rounded-lg border border-slate-200 p-4 dark:border-slate-800" key={campaign.id}>
+                <p className="font-black">{campaign.title}</p>
+                <p className="mt-1 text-sm text-slate-500">{campaign.sponsor} - creator share {campaign.creatorShareBps / 100}%</p>
+              </div>
+            ))}
+          </div>
+        </section>      </main>
     </>
   );
 }

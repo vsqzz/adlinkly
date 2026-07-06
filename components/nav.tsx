@@ -4,6 +4,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 const links = [
   ["Dashboard", "/dashboard"],
   ["Premium", "/premium"],
+  ["Advertise", "/advertise"],
   ["API", "/api-docs"],
   ["Support", "/support"]
 ] as const;

@@ -66,3 +66,32 @@ creator_payout = premium_pool * creator_share
 ```
 
 This lets Adlinkly offer fewer ads to premium visitors while creators still earn more from premium traffic.
+
+## PayPal payouts and real ads MVP
+
+Adlinkly now has a PayPal Payouts API wrapper and an admin-only payout endpoint:
+
+```txt
+POST /api/admin/paypal-payouts
+```
+
+Required environment variables:
+
+```txt
+ADMIN_PAYOUT_SECRET=replace-with-a-long-random-admin-secret
+PAYPAL_MODE=sandbox
+PAYPAL_CLIENT_ID=your-paypal-rest-app-client-id
+PAYPAL_CLIENT_SECRET=your-paypal-rest-app-secret
+```
+
+Start with `PAYPAL_MODE=sandbox`. Switch to `live` only after PayPal enables payouts for the account and you have tested small approved batches.
+
+The unlock page also includes first-party sponsor placements. This lets Adlinkly sell direct ad slots and affiliate campaigns before larger ad networks approve the site.
+
+Recommended launch flow:
+
+1. Sell sponsor placements manually.
+2. Track impressions/clicks and creator revenue internally.
+3. Require admin approval before payouts.
+4. Send approved creator payouts through PayPal Payouts.
+5. Register KVK once revenue proves the project is worth formalizing.
