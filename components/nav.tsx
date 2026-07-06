@@ -6,7 +6,7 @@ const links = [
   ["Premium", "/premium"],
   ["API", "/api-docs"],
   ["Support", "/support"]
-];
+] as const;
 
 export function Nav() {
   return (
