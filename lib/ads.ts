@@ -6,7 +6,7 @@ export type SponsorCampaign = {
   cta: string;
   url: string;
   placement: "unlock_primary" | "unlock_secondary";
-  payoutType: "cpm" | "cpc" | "flat";
+  payoutType: "cpm" | "cpc" | "flat" | "affiliate";
   creatorShareBps: number;
 };
 

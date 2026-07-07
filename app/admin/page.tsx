@@ -1,17 +1,21 @@
 import { Nav } from "@/components/nav";
-import { sponsorCampaigns } from "@/lib/ads";
+import { getAdminStats } from "@/lib/stats";
 
-export default function AdminPage() {
+export const dynamic = "force-dynamic";
+
+export default async function AdminPage() {
+  const data = await getAdminStats();
+
   return (
     <>
       <Nav />
       <main className="shell py-10">
         <h1 className="text-4xl font-black">Admin command center</h1>
         <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {["Pending payouts", "Risky creators", "Abuse reports", "Ad campaigns"].map((item, index) => (
+          {data.cards.map(([item, value]) => (
             <div className="glass rounded-lg p-5" key={item}>
               <p className="text-sm font-bold text-slate-500 dark:text-slate-400">{item}</p>
-              <p className="mt-3 text-3xl font-black">{[12, 7, 34, 18][index]}</p>
+              <p className="mt-3 text-3xl font-black">{value}</p>
             </div>
           ))}
         </div>
@@ -37,7 +41,7 @@ export default function AdminPage() {
         <section className="glass mt-8 rounded-lg p-6">
           <h2 className="text-2xl font-black">Sponsor campaigns</h2>
           <div className="mt-4 grid gap-3">
-            {sponsorCampaigns.map((campaign) => (
+            {data.campaigns.map((campaign) => (
               <div className="rounded-lg border border-slate-200 p-4 dark:border-slate-800" key={campaign.id}>
                 <p className="font-black">{campaign.title}</p>
                 <p className="mt-1 text-sm text-slate-500">{campaign.sponsor} - creator share {campaign.creatorShareBps / 100}%</p>

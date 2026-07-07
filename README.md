@@ -95,3 +95,88 @@ Recommended launch flow:
 3. Require admin approval before payouts.
 4. Send approved creator payouts through PayPal Payouts.
 5. Register KVK once revenue proves the project is worth formalizing.
+## Production setup runbook
+
+Adlinkly now supports database-backed links, creator stats, sponsor campaigns, ad impressions, qualified unlock tracking, ledger entries, payout requests, admin payout approval, and PayPal payout execution.
+
+Required Vercel env vars:
+
+```txt
+DATABASE_URL=postgresql://...
+ADLINKLY_SIGNING_SECRET=long-random-secret
+IP_HASH_SECRET=long-random-secret
+ADMIN_API_SECRET=long-random-secret
+ADMIN_PAYOUT_SECRET=long-random-secret
+PAYPAL_MODE=sandbox
+PAYPAL_CLIENT_ID=paypal-rest-app-client-id
+PAYPAL_CLIENT_SECRET=paypal-rest-app-secret
+MIN_PAYOUT_CENTS=2500
+DEFAULT_CPM_CENTS=120
+DEFAULT_CPC_CENTS=8
+DEFAULT_CREATOR_SHARE_BPS=5000
+```
+
+Apply the database schema before real traffic:
+
+```bash
+npx prisma db push
+```
+
+Bootstrap a creator and API key:
+
+```bash
+curl -X POST https://adlinkly.net/api/admin/setup \
+  -H "Content-Type: application/json" \
+  -H "x-admin-secret: $ADMIN_API_SECRET" \
+  -d '{"email":"creator@example.com","name":"First Creator","handle":"firstcreator"}'
+```
+
+Create a monetized link:
+
+```bash
+curl -X POST https://adlinkly.net/api/v1/links \
+  -H "Authorization: Bearer $CREATOR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Download Pack","destinationUrl":"https://example.com/file","monetization":"standard"}'
+```
+
+Create a sponsor campaign:
+
+```bash
+curl -X POST https://adlinkly.net/api/admin/campaigns \
+  -H "Content-Type: application/json" \
+  -H "x-admin-secret: $ADMIN_API_SECRET" \
+  -d '{"sponsorName":"Example Sponsor","title":"Try our tool","description":"A real paid sponsor placement.","targetUrl":"https://example.com","budgetCents":5000,"payoutType":"CPC","creatorShareBps":5000}'
+```
+
+Live stats endpoints:
+
+```txt
+GET /api/stats/creator
+GET /api/stats/admin with x-admin-secret
+```
+
+Creator payout request:
+
+```bash
+curl -X POST https://adlinkly.net/api/payouts/request \
+  -H "Authorization: Bearer $CREATOR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"paypalEmail":"creator@example.com","amountCents":2500}'
+```
+
+Admin payout approval and PayPal execution:
+
+```bash
+curl -X POST https://adlinkly.net/api/admin/payouts/approve \
+  -H "Content-Type: application/json" \
+  -H "x-admin-secret: $ADMIN_PAYOUT_SECRET" \
+  -d '{"payoutId":"payout_id_here"}'
+
+curl -X POST https://adlinkly.net/api/admin/payouts/execute \
+  -H "Content-Type: application/json" \
+  -H "x-admin-secret: $ADMIN_PAYOUT_SECRET" \
+  -d '{"payoutIds":["payout_id_here"]}'
+```
+
+Keep PayPal in sandbox until PayPal confirms live payouts are available. Keep admin approval enabled so fraudulent traffic never auto-pays.

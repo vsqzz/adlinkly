@@ -1,9 +1,13 @@
 import Link from "next/link";
 import { Nav } from "@/components/nav";
 import { StatCard } from "@/components/stat-card";
-import { creatorStats, links, payoutRows } from "@/lib/mock-data";
+import { getCreatorDashboardData } from "@/lib/stats";
 
-export default function DashboardPage() {
+export const dynamic = "force-dynamic";
+
+export default async function DashboardPage() {
+  const data = await getCreatorDashboardData();
+
   return (
     <>
       <Nav />
@@ -12,6 +16,7 @@ export default function DashboardPage() {
           <div>
             <p className="text-sm font-bold uppercase tracking-wide text-sky-500">Creator workspace</p>
             <h1 className="mt-2 text-4xl font-black tracking-tight">Dashboard</h1>
+            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{data.note}</p>
           </div>
           <Link className="focus-ring rounded-lg bg-sky-500 px-4 py-2 text-sm font-bold text-white hover:bg-sky-600" href="/dashboard/new-link">
             Create monetized link
@@ -19,7 +24,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {creatorStats.map((stat) => (
+          {data.stats.map((stat) => (
             <StatCard key={stat.label} {...stat} />
           ))}
         </div>
@@ -44,7 +49,7 @@ export default function DashboardPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {links.map((link) => (
+                  {data.links.map((link) => (
                     <tr className="border-t border-slate-200 dark:border-slate-800" key={link.slug}>
                       <td className="py-4">
                         <p className="font-bold">{link.title}</p>
@@ -69,7 +74,7 @@ export default function DashboardPage() {
             <h2 className="text-xl font-black">Payouts</h2>
             <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">Manual approval first, automated payouts later.</p>
             <div className="mt-4 space-y-3">
-              {payoutRows.map((row) => (
+              {data.payouts.map((row) => (
                 <div className="rounded-lg border border-slate-200 p-4 dark:border-slate-800" key={`${row.date}-${row.amount}`}>
                   <div className="flex items-center justify-between">
                     <p className="font-black">{row.amount}</p>

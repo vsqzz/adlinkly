@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { recordQualifiedUnlock } from "@/lib/events";
+import { hasDatabaseUrl, prisma } from "@/lib/prisma";
 import { scoreVisitRisk, verifyUnlockToken } from "@/lib/security";
 
 const demoDestinations: Record<string, string> = {
@@ -26,6 +28,16 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Visit blocked by risk controls" }, { status: 403 });
   }
 
-  const destination = demoDestinations[slug] || "https://adlinkly.net";
+  await recordQualifiedUnlock({
+    slug,
+    visitorId: verified.payload.visitorId,
+    ip: request.headers.get("x-forwarded-for"),
+    userAgent: request.headers.get("user-agent"),
+    country: request.headers.get("x-vercel-ip-country"),
+    riskScore: risk.score
+  });
+
+  const dbLink = hasDatabaseUrl() ? await prisma.link.findUnique({ where: { slug } }) : null;
+  const destination = dbLink?.destinationUrl || demoDestinations[slug] || "https://adlinkly.net";
   return NextResponse.redirect(destination);
 }

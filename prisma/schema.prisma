@@ -12,13 +12,11 @@ enum Role {
   CREATOR
   ADMIN
 }
-
 enum LinkStatus {
   LIVE
   REVIEW
   BLOCKED
 }
-
 enum LedgerType {
   AD_REVENUE
   PREMIUM_POOL
@@ -26,7 +24,6 @@ enum LedgerType {
   ADJUSTMENT
   PAYOUT
 }
-
 enum PayoutStatus {
   REQUESTED
   APPROVED
@@ -35,14 +32,13 @@ enum PayoutStatus {
   HELD
   REJECTED
 }
-
-
 enum AdPayoutType {
   CPM
   CPC
   FLAT
   AFFILIATE
 }
+
 model User {
   id             String          @id @default(cuid())
   email          String          @unique
@@ -59,51 +55,60 @@ model User {
   ledgerEntries  LedgerEntry[]
   payoutAccounts PayoutAccount[]
   supportTickets SupportTicket[]
+  apiKeys        ApiKey[]
 }
 
 model CreatorProfile {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  handle      String   @unique
-  bio         String?
-  website     String?
-  fraudScore  Int      @default(0)
-  payoutHold  Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  handle     String   @unique
+  bio        String?
+  website    String?
+  fraudScore Int      @default(0)
+  payoutHold Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Link {
-  id             String     @id @default(cuid())
+  id             String         @id @default(cuid())
   creatorId      String
-  slug           String     @unique
+  slug           String         @unique
   title          String
   destinationUrl String
-  status         LinkStatus @default(REVIEW)
-  premiumBoost   Boolean    @default(true)
-  apiCreated     Boolean    @default(false)
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
-  creator        User       @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  status         LinkStatus     @default(REVIEW)
+  premiumBoost   Boolean        @default(true)
+  apiCreated     Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  creator        User           @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   clicks         Click[]
+  adImpressions  AdImpression[]
+
+  @@index([creatorId, createdAt])
+  @@index([status, createdAt])
 }
 
 model Click {
-  id          String   @id @default(cuid())
-  linkId      String
-  visitorId   String?
-  userId      String?
-  ipHash      String?
-  userAgent   String?
-  country     String?
-  riskScore   Int      @default(0)
-  qualified   Boolean  @default(false)
-  premium     Boolean  @default(false)
-  revenueCents Int     @default(0)
-  createdAt   DateTime @default(now())
-  link        Link     @relation(fields: [linkId], references: [id], onDelete: Cascade)
-  user        User?    @relation(fields: [userId], references: [id])
+  id           String   @id @default(cuid())
+  linkId       String
+  visitorId    String?
+  userId       String?
+  ipHash       String?
+  userAgent    String?
+  country      String?
+  riskScore    Int      @default(0)
+  qualified    Boolean  @default(false)
+  premium      Boolean  @default(false)
+  revenueCents Int      @default(0)
+  createdAt    DateTime @default(now())
+  link         Link     @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  user         User?    @relation(fields: [userId], references: [id])
+
+  @@index([linkId, createdAt])
+  @@index([visitorId, createdAt])
+  @@index([qualified, createdAt])
 }
 
 model LedgerEntry {
@@ -114,6 +119,9 @@ model LedgerEntry {
   note        String?
   createdAt   DateTime   @default(now())
   user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([type, createdAt])
 }
 
 model PayoutAccount {
@@ -124,18 +132,23 @@ model PayoutAccount {
   createdAt  DateTime @default(now())
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   payouts    Payout[]
+
+  @@index([userId, provider])
 }
 
 model Payout {
-  id              String       @id @default(cuid())
+  id              String        @id @default(cuid())
   payoutAccountId String
   amountCents     Int
-  status          PayoutStatus @default(REQUESTED)
+  status          PayoutStatus  @default(REQUESTED)
   paypalBatchId   String?
   paypalItemId    String?
   reviewedAt      DateTime?
-  createdAt       DateTime     @default(now())
+  createdAt       DateTime      @default(now())
   account         PayoutAccount @relation(fields: [payoutAccountId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt])
+  @@index([payoutAccountId, createdAt])
 }
 
 model AffiliateReferral {
@@ -144,6 +157,9 @@ model AffiliateReferral {
   referredUserId String
   commissionBps  Int      @default(1000)
   createdAt      DateTime @default(now())
+
+  @@index([referrerUserId, createdAt])
+  @@index([referredUserId, createdAt])
 }
 
 model SupportTicket {
@@ -155,15 +171,20 @@ model SupportTicket {
   status    String   @default("open")
   createdAt DateTime @default(now())
   user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([status, createdAt])
 }
 
 model ApiKey {
-  id          String   @id @default(cuid())
-  userId      String
-  name        String
-  keyHash     String   @unique
-  lastUsedAt  DateTime?
-  createdAt   DateTime @default(now())
+  id         String    @id @default(cuid())
+  userId     String
+  name       String
+  keyHash    String    @unique
+  lastUsedAt DateTime?
+  createdAt  DateTime  @default(now())
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model SponsorCampaign {
@@ -180,6 +201,9 @@ model SponsorCampaign {
   active          Boolean        @default(true)
   createdAt       DateTime       @default(now())
   impressions     AdImpression[]
+
+  @@index([active, placement])
+  @@index([createdAt])
 }
 
 model AdImpression {
@@ -192,4 +216,10 @@ model AdImpression {
   revenueCents Int             @default(0)
   createdAt    DateTime        @default(now())
   campaign     SponsorCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  link         Link?           @relation(fields: [linkId], references: [id])
+
+  @@index([campaignId, createdAt])
+  @@index([linkId, createdAt])
+  @@index([clicked, createdAt])
+  @@index([qualified, createdAt])
 }

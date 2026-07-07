@@ -1,7 +1,11 @@
 import { Nav } from "@/components/nav";
-import { sponsorCampaigns } from "@/lib/ads";
+import { getAdminStats } from "@/lib/stats";
 
-export default function AdvertisePage() {
+export const dynamic = "force-dynamic";
+
+export default async function AdvertisePage() {
+  const data = await getAdminStats();
+
   return (
     <>
       <Nav />
@@ -28,7 +32,7 @@ export default function AdvertisePage() {
         <section className="glass mt-8 rounded-lg p-6">
           <h2 className="text-2xl font-black">Active demo campaigns</h2>
           <div className="mt-4 grid gap-3">
-            {sponsorCampaigns.map((campaign) => (
+            {data.campaigns.map((campaign) => (
               <div className="rounded-lg border border-slate-200 p-4 dark:border-slate-800" key={campaign.id}>
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
